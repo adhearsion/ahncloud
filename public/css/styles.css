@@ -1,0 +1,52 @@
+body {
+  text-align: center;
+  font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
+}
+#bodyDiv {
+  margin: auto;
+  width: 800px;
+  border: 1px solid black;
+  text-align: left;
+}
+
+#flash {
+  width: inherit;
+  text-align: center;
+  height: 25px;
+  border-bottom: 1px solid black;
+  display: none;
+}
+
+.notice {
+  background-color: #6F6;
+}
+
+.error {
+  background-color: #FF5050;
+}
+
+#header {
+  font-size: 30px;
+  text-align: center;
+  height: 50px;
+  padding: 25px 50px;
+  border-bottom: 1px solid black;
+}
+
+#content {
+  height: 400px;
+  padding: 25px 50px;
+}
+
+.appDetails {
+  display: none;
+  height: 25px;
+  border: 1px solid black;
+}
+
+#footer {
+  height: 50px;
+  padding: 25px 50px;
+  border-top: 1px solid black;
+  text-align: right;
+}

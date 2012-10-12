@@ -1,0 +1,18 @@
+- content_for :head do
+  %script{ :type => "text/javascript", :src => "/javascript/divtools.js" }
+- content_for :title do
+  = "#{@user.username}'s Dashboard"
+- content_for :header do
+  = "#{@user.username}'s Dashboard"
+- content_for :content do
+  #apps
+    - @apps.each do |app|
+      %div{ :id => "app_#{app.name}" }
+        %a{ :onclick => "showHideDiv('#{app.name}');" } [+]
+        = app.name
+        %div{ :id => "#{app.name}", :class => "appDetails" }
+      %br
+  %br
+  %a{ :href => "/new_app"} Create a New App
+- content_for :footer do
+  %a{ :href => "/logout" } Log Out

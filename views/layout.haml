@@ -1,0 +1,20 @@
+!!!
+%html
+  %head
+    %link{ :rel => "stylesheet", :type => "text/css", :href => "#{url('/css/styles.css')}" }
+    %script{ :type => "text/javascript", :src => "#{url('/javascript/flash.js')}"}
+    = yield_content :head
+    %title
+      = yield_content :title
+  %body
+    #bodyDiv  
+      #flash
+        = show_flash[:message]
+        :javascript
+          showFlash("#{show_flash[:method]}");
+      #header
+        = yield_content :header
+      #content
+        = yield_content :content
+      #footer
+        = yield_content :footer

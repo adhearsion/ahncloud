@@ -1,0 +1,17 @@
+- content_for :header do 
+  Please enter the info for your new app:
+- content_for :content do
+  %form{ :action => "/create_app", :method => "post" }
+    %fieldset
+      #app_name
+        %label{ :for => "Name" } Name for your App
+        %input{ :type => "text", :name => "Name" }
+      %br
+      #app_jid
+        %label{ :for => "Jid" } Jabber ID (JID) for your App
+        %input{ :type => "text", :name => "Jid" }
+      %br
+      #submit
+        %input{ :type => "submit", :value => "Create App" }
+- content_for :footer do
+  %a{ :href => "/" } Cancel
