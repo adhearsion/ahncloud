@@ -14,11 +14,9 @@ require File.join(File.dirname(__FILE__), './lib', '/app.rb')
 
 DataMapper.setup :default, 'postgres://wdrexler@localhost/ahn_cloud_development'
 DataMapper.finalize
-DataMapper.auto_migrate!
+DataMapper.auto_upgrade!
 # DataMapper::Model.raise_on_save_failure = true
 
-#Temporary user creation -- Testing
-User.create created_at: Time.now, username: 'wdrexler', enabled: true
 
 helpers do
 
@@ -32,27 +30,40 @@ helpers do
     end
   end
 
-  def authenticate
-    #Stub method: waiting on API Matrix
-    session[:auth] = true
-    flash[:notice] = "Signed In!"
+  def authenticate(code)
+    options = { :body => { :client_id => "7919aeebf6e0d16f28d43dd427850a17", :client_secret => "07f992846062c5a0", :redirect_uri => "http://localhost:4567/oauth/callback", :grant_type => "authorization_code", :code => code } }
+    response = HTTParty.post "https://auth.tfoundry.com/oauth/token", options
+    body = JSON.parse response.body
+    if body['access_token']
+      session[:access_token] = body['access_token']
+      redirect '/login' unless authorized?
+      flash[:notice] = "Signed In! Welcome, #{session[:user]}"
+      redirect '/'
+    else
+      flash[:error] = "Failed to authenticate user"
+      redirect '/login'
+    end
   end
 
   def log_out
     #Stub method: waiting on API Matrix
-    session[:auth] = false
+    session[:access_token] = nil
     session[:user] = nil
     flash[:notice] = "You have logged out."
   end
 
-  def protected!
-    unless authorized?
-      throw(:halt, [401, "Not authorized\n"])
-    end
-  end
-
   def authorized?
-    session[:auth] && !!session[:user]
+    response = HTTParty.get "https://auth.tfoundry.com/me.json?access_token=#{session[:access_token]}"
+    body = JSON.parse response.body
+    if body["error"]
+      session[:user] = nil
+      session[:access_token] = nil
+      flash[:error] = "Failed to authenticate user"
+      false
+    else
+      session[:user] = body["email"]
+      true
+    end
   end
 
 end
@@ -60,6 +71,11 @@ end
 get '/' do
   redirect '/login' unless !!session[:user]
   @user = User.first username: session[:user]
+  unless !!@user
+    @user = User.new(:username => session[:user], :created_at => Time.now, :enabled => true)
+    @user.save
+  end
+
   @apps = @user.apps
   haml :dashboard
 end
@@ -69,7 +85,6 @@ get '/login' do
 end
 
 post '/login' do
-  session[:user] = params['Username']
   redirect 'https://auth.tfoundry.com/oauth/authorize?client_id=7919aeebf6e0d16f28d43dd427850a17&response_type=code&scope=profile&redirect_uri=http://localhost:4567/oauth/callback'
 end
 
@@ -78,39 +93,26 @@ get '/logout' do
   redirect '/login'
 end
 
-get '/apps/:id' do
-  protected!
-  @user = User.first username: session[:user]
-  @app = @user.apps.get params['id']
-  haml :view_app
-end
 
 get '/new_app' do
-  protected!
   @user = User.first username: session[:user]
   haml :new_app
 end
 
 post '/create_app' do
-  protected!
-  @user = User.first :username => session[:user]
-  @unique_id = UUIDTools::UUID.random_create
-  @app = @user.apps.new
-  @app.attributes = { :created_at => Time.now, :jid => params['Jid'], :name => params['Name'], :uuid => @unique_id.to_s, :sip_address => "#{@unique_id}@adhearsioncloud.com", :did_active => false }
-  @app.save
-  @user.save
-  redirect '/'
+  if authorized?
+    @user = User.first :username => session[:user]
+    @unique_id = UUIDTools::UUID.random_create
+    @app = @user.apps.new
+    @app.attributes = { :created_at => Time.now, :jid => params['Jid'], :name => params['Name'], :uuid => @unique_id.to_s, :sip_address => "#{@unique_id}@adhearsioncloud.com", :did_active => false }
+    @app.save
+    @user.save
+    redirect '/'
+  else
+    redirect '/login'
+  end
 end
 
 get '/oauth/callback' do
-  options = { :body => { :client_id => "7919aeebf6e0d16f28d43dd427850a17", :client_secret => "07f992846062c5a0", :redirect_uri => "http://localhost:4567/oauth/callback", :grant_type => "authorization_code", :code => params['code'] } }
-  response = HTTParty.post "https://auth.tfoundry.com/oauth/token", options
-  body = JSON.parse response.body
-  if body["access_token"]
-    authenticate
-    redirect '/'
-  else
-    flash[:error] = "Failed to authenticate user"
-    redirect '/login'
-  end
+  authenticate(params['code'])
 end

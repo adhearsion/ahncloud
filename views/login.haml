@@ -3,15 +3,7 @@
 - content_for :header do
   Please log in with your AT&T API Matrix Account
 - content_for :content do
-  %form{ :action => '', :method => "post" }
-    %fieldset
-      #username
-        %label{ :for => "Username" } Username:
-        %input{ :type => "text", :name => "Username" }
-      %br
-      #password
-        %label{ :for => "Password" } Password:
-        %input{ :type => "password", :name => "Password" }
-      %br
+  %form{ :action => '', :method => "post", :style => "text-align: center;" }
+    %fieldset 
       #submit
         %input{ :type => "submit", :value => "Log In" }
