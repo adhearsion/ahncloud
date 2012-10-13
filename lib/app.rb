@@ -8,6 +8,7 @@ class App
   property :jid,         String
   property :sip_address, String, :length => 255
   property :name,        String
+  property :did_active,  Boolean
 
   belongs_to :user
 end
