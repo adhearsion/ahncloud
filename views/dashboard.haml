@@ -8,7 +8,7 @@
   #apps
     - @apps.each do |app|
       %div{ :id => "app_#{app.name}" }
-        %button{ :onclick => "showHideDiv('#{app.name}')" } [+]
+        %button{ :onclick => "showHideDiv('#{app.name}')" } +
         = app.name
         .appDetails{ :id => "#{app.name}"}
           JID: &nbsp;
@@ -24,6 +24,8 @@
           = app.did_active
           %br
           %a{ :href => "" } Activate DID
+          .deleteLink
+            %a{ :href => "/delete_app?app_id=#{app.id}" } Delete this App
       %br
   %br
   %a{ :href => "/new_app"} Create a New App

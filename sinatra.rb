@@ -113,6 +113,22 @@ post '/create_app' do
   end
 end
 
+get '/delete_app' do
+  if params['app_id']
+    app = App.get(params['app_id'])
+    if app.destroy
+      flash[:notice] = "App sucessfully deleted"
+    else
+      flash[:error] = "Error: #{app.errors.each {|e| e.to_s}}"
+    end
+  else
+    flash[:error] = "Error: App does not exist."
+  end
+  redirect '/'
+end
+
+
+
 get '/oauth/callback' do
   authenticate(params['code'])
 end

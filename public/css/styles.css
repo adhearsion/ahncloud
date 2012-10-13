@@ -44,6 +44,12 @@ body {
   padding: 10px;
 }
 
+.deleteLink {
+  display: inline;
+  text-align: right;
+  float: right;
+}
+
 #footer {
   height: 50px;
   padding: 25px 50px;
