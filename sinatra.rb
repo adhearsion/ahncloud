@@ -114,15 +114,20 @@ post '/create_app' do
 end
 
 get '/delete_app' do
+  @user = User.first :username => session[:user]
   if params['app_id']
     app = App.get(params['app_id'])
-    if app.destroy
-      flash[:notice] = "App sucessfully deleted"
+    if app && @user.apps.include?(app)
+      if app.destroy
+        flash[:notice] = "App sucessfully deleted"
+      else
+        flash[:error] = "Error: #{app.errors.each {|e| e.to_s}}"
+      end
     else
-      flash[:error] = "Error: #{app.errors.each {|e| e.to_s}}"
+      flash[:error] = "Error: App Does Not Exist"
     end
   else
-    flash[:error] = "Error: App does not exist."
+    flash[:error] = "Error: No App ID Specified"
   end
   redirect '/'
 end
