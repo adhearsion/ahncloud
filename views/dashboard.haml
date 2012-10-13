@@ -1,16 +1,29 @@
 - content_for :head do
   %script{ :type => "text/javascript", :src => "/javascript/divtools.js" }
 - content_for :title do
-  = "#{@user.username}'s Dashboard"
+  = "Dashboard: #{@user.username}"
 - content_for :header do
-  = "#{@user.username}'s Dashboard"
+  = "Dashboard: #{@user.username}"
 - content_for :content do
   #apps
     - @apps.each do |app|
       %div{ :id => "app_#{app.name}" }
-        %a{ :onclick => "showHideDiv('#{app.name}');" } [+]
+        %button{ :onclick => "showHideDiv('#{app.name}')" } [+]
         = app.name
-        %div{ :id => "#{app.name}", :class => "appDetails" }
+        .appDetails{ :id => "#{app.name}"}
+          JID: &nbsp;
+          = app.jid
+          %br
+          SIP Address: 
+          = app.sip_address
+          %br
+          Created At: 
+          = app.created_at
+          %br
+          DID Active: 
+          = app.did_active
+          %br
+          %a{ :href => "" } Activate DID
       %br
   %br
   %a{ :href => "/new_app"} Create a New App

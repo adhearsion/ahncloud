@@ -58,7 +58,7 @@ helpers do
 end
 
 get '/' do
-  redirect '/login' unless authorized?
+  redirect '/login' unless !!session[:user]
   @user = User.first username: session[:user]
   @apps = @user.apps
   haml :dashboard
@@ -96,10 +96,9 @@ post '/create_app' do
   @user = User.first :username => session[:user]
   @unique_id = UUIDTools::UUID.random_create
   @app = @user.apps.new
-  @app.attributes = { :created_at => Time.now, :jid => params['Jid'], :name => params['Name'], :uuid => @unique_id.to_s, :sip_address => "#{@unique_id}@adhearsioncloud.com" }
+  @app.attributes = { :created_at => Time.now, :jid => params['Jid'], :name => params['Name'], :uuid => @unique_id.to_s, :sip_address => "#{@unique_id}@adhearsioncloud.com", :did_active => false }
   @app.save
   @user.save
-  #Cassandra code goes here
   redirect '/'
 end
 
