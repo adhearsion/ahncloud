@@ -2,6 +2,7 @@ body {
   text-align: center;
   font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
 }
+
 #bodyDiv {
   margin: auto;
   width: 800px;
@@ -34,12 +35,10 @@ body {
 }
 
 #content {
-  height: 400px;
   padding: 25px 50px;
 }
 
 .appDetails {
-  display: none;
   border: 1px solid black;
   padding: 10px;
 }
