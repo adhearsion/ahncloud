@@ -1,0 +1,11 @@
+!!!
+- content_for :title do
+  Edit Jabber ID
+- content_for :header do
+  = "Edit Jabber ID: #{app.name}"
+- content_for :content do
+  %form{ :action => '', :method => 'post' }
+    %fieldset
+      %input{ :type => 'hidden', :name => 'app_id', :value => "#{@app.id}" }
+      %input{ :type => 'text', :name => 'Jid', :value => "#{@app.jid}" }
+      %input{ :type => 'submit', :value => 'Change Jabber ID' }
