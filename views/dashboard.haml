@@ -7,9 +7,10 @@
 - content_for :content do
   #apps
     - @apps.each do |app|
-      %div{ :id => "app_#{app.name}" }
+      %div{ :id => "app_#{app.name}", :class => "appName" }
         = app.name
-        %button{ :id => "show_#{app.name}", :onclick => "showHideDiv('#{app.name}')" } Show Details
+        .rightAlign
+          %button{ :id => "show_#{app.name}", :onclick => "showHideDiv('#{app.name}')" } Show Details
         .appDetails{ :id => "#{app.name}", :style => "display: none;" }
           Jabber ID: 
           = app.jid
@@ -25,7 +26,7 @@
           = app.did_active
           %br
           %a{ :href => "" } Activate DID
-          .deleteLink
+          .rightAlign
             %a{ :href => "/delete_app?app_id=#{app.id}" } Delete this App
       %br
   %br

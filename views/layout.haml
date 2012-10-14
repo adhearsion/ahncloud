@@ -8,12 +8,12 @@
       = yield_content :title
   %body
     #bodyDiv  
+      #header
+        = yield_content :header
       #flash
         = show_flash[:message]
         :javascript
-          showFlash("#{show_flash[:method]}");
-      #header
-        = yield_content :header
+          showFlash("#{show_flash[:method]}");  
       #content
         = yield_content :content
       #footer
