@@ -46,10 +46,8 @@ helpers do
   end
 
   def log_out
-    #Stub method: waiting on API Matrix
     session[:access_token] = nil
     session[:user] = nil
-    flash[:notice] = "You have logged out."
   end
 
   def authorized?
@@ -85,11 +83,12 @@ get '/login' do
 end
 
 post '/login' do
-  redirect 'https://auth.tfoundry.com/oauth/authorize?client_id=7919aeebf6e0d16f28d43dd427850a17&response_type=code&scope=profile&redirect_uri=http://localhost:4567/oauth/callback'
+  redirect 'https://auth.tfoundry.com/oauth/authorize?client_id=7919aeebf6e0d16f28d43dd427850a17&client_secret=07f992846062c5a0&response_type=code&scope=profile&redirect_uri=http://localhost:4567/oauth/callback'
 end
 
 get '/logout' do
   log_out
+  flash[:notice] = "You have logged out."
   redirect '/login'
 end
 
@@ -114,20 +113,62 @@ post '/create_app' do
 end
 
 get '/delete_app' do
-  @user = User.first :username => session[:user]
-  if params['app_id']
-    app = App.get(params['app_id'])
-    if app && @user.apps.include?(app)
-      if app.destroy
-        flash[:notice] = "App sucessfully deleted"
+  if authorized?
+    @user = User.first :username => session[:user]
+    if params['app_id']
+      app = App.get params['app_id']
+      if app && @user.apps.include?(app)
+        if app.destroy
+          flash[:notice] = "App sucessfully deleted"
+        else
+          flash[:error] = "Error: #{app.errors.each {|e| e.to_s}}"
+        end
       else
-        flash[:error] = "Error: #{app.errors.each {|e| e.to_s}}"
+        flash[:error] = "Error: App Not Found"
       end
     else
-      flash[:error] = "Error: App Does Not Exist"
+      flash[:error] = "Error: No App ID Specified"
+    end
+  else
+    flash[:error] = "Unauthorized User"
+    log_out
+  end
+  redirect '/'
+end
+
+get '/edit_jid' do
+  @user = User.first :username => session[:user]
+  if params['app_id']
+    @app_id = params['app_id']
+    @app = App.get @app_id
+    if @app && @user.apps.include?(app)
+      haml :edit_jid
+    else
+      flash[:error] = "Error: App Not Found"
+      redirect '/'
     end
   else
     flash[:error] = "Error: No App ID Specified"
+    redirect '/'
+  end
+end
+
+post '/edit_jid' do
+  if authorized?
+    @user = User.first :username => session[:user]
+    if params['app_id']
+      app = App.get params['app_id']
+      if app && @user.apps.include?(app)
+        app.update :jid => params['Jid']
+        flash[:notice] = "Jabber ID Updated for App #{app.name}"
+      else
+        flash[:error] = "Error: Unable to find App"
+      end
+    else
+      flash[:error] = "Error: No App ID Specified"
+    end
+  else
+    flash[:error] = "Unauthorized User"
   end
   redirect '/'
 end
