@@ -70,7 +70,7 @@ end
 
 get '/' do
   redirect '/login' unless !!session[:user]
-  @user = User.first username: session[:user]
+  @user = User.first :username => session[:user]
   unless !!@user
     @user = User.new(:username => session[:user], :created_at => Time.now, :enabled => true)
     @user.save
@@ -95,7 +95,7 @@ end
 
 
 get '/new_app' do
-  @user = User.first username: session[:user]
+  @user = User.first :username => session[:user]
   haml :new_app
 end
 
@@ -131,8 +131,6 @@ get '/delete_app' do
   end
   redirect '/'
 end
-
-
 
 get '/oauth/callback' do
   authenticate(params['code'])
