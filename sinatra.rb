@@ -11,12 +11,19 @@ enable :sessions
 
 require File.join(File.dirname(__FILE__), './lib', '/user.rb')
 require File.join(File.dirname(__FILE__), './lib', '/app.rb')
+require File.join(File.dirname(__FILE__), './lib', '/did.rb')
+
 
 DataMapper.setup :default, 'postgres://wdrexler@localhost/ahn_cloud_development'
 DataMapper.finalize
 DataMapper.auto_migrate!
 # DataMapper::Model.raise_on_save_failure = true
 
+
+#Temporary fake DIDs for testing
+DID.new(:created_at => Time.now, :number => "123456", :app_id => nil).save
+DID.new(:created_at => Time.now, :number => "323417", :app_id => nil).save
+DID.new(:created_at => Time.now, :number => "8675309", :app_id => nil).save
 
 helpers do
 
@@ -73,6 +80,34 @@ helpers do
     rayo_routing_properties.close
   end
 
+  def assign_did(app_id)
+    if authorized?
+      user = User.first :username => session[:user]
+      app = App.get app_id
+      if app && user.apps.include?(app)
+        DID.all.each do |d|
+          if d.app_id.nil?
+            d.app_id = app.id
+            app.did = d.number
+            d.save
+            break
+          end
+        end
+        app.save
+        if app.did
+          flash[:notice] = "DID #{app.did} added to App #{app.name}"
+        else
+          flash[:error] = "Could not assign DID. Please try again later."
+        end
+      else
+        flash[:error] = "App not found."
+      end
+    else
+      flash[:error] = "Unauthorized User."
+    end
+    redirect '/'
+  end
+
 end
 
 get '/' do
@@ -127,8 +162,11 @@ get '/delete_app' do
     @user = User.first :username => session[:user]
     if params['app_id']
       app = App.get params['app_id']
+      did = DID.first :number => app.did
       if app && @user.apps.include?(app)
         if app.destroy
+          did.app_id = nil
+          did.save
           flash[:notice] = "App sucessfully deleted"
         else
           flash[:error] = "Error: #{app.errors.each {|e| e.to_s}}"
@@ -181,6 +219,10 @@ post '/edit_name' do
     flash[:error] = "Unauthorized User"
   end
   redirect '/'
+end
+
+get '/assign_did' do
+  assign_did params['app_id']
 end
 
 get '/oauth/callback' do

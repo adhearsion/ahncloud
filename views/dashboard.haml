@@ -29,7 +29,7 @@
           - if !!app.did
             = app.did
           - else
-            %a{ :href => "" } Activate
+            %a{ :href => "/assign_did?app_id=#{app.id}" } Activate
           .rightAlign
             %a{ :href => "/delete_app?app_id=#{app.id}" } Delete this App
       %br
