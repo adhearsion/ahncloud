@@ -95,6 +95,7 @@ helpers do
         end
         app.save
         if app.did
+          update_rayo_routing
           flash[:notice] = "DID #{app.did} added to App #{app.name}"
         else
           flash[:error] = "Could not assign DID. Please try again later."
