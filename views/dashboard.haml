@@ -25,10 +25,11 @@
           Created At: 
           = app.created_at
           %br
-          DID Active: 
-          = app.did_active
-          %br
-          %a{ :href => "" } Activate DID
+          DID: 
+          - if !!app.did
+            = app.did
+          - else
+            %a{ :href => "" } Activate
           .rightAlign
             %a{ :href => "/delete_app?app_id=#{app.id}" } Delete this App
       %br

@@ -68,6 +68,7 @@ helpers do
     rayo_routing_properties = File.new(File.join(File.dirname(__FILE__), './config', '/rayo-routing.properties'), 'w')
     App.all.each do |app|
       rayo_routing_properties.write ".*#{app.sip_address}.*=#{app.jid}\n"
+      rayo_routing_properties.write ".*#{app.did}.*=#{app.jid}\n" if !!app.did
     end
     rayo_routing_properties.close
   end
@@ -111,7 +112,7 @@ post '/create_app' do
     @user = User.first :username => session[:user]
     @unique_id = UUIDTools::UUID.random_create
     @app = @user.apps.new
-    @app.attributes = { :created_at => Time.now, :jid => "#{@unique_id}@ahncloudim.tfoundry.com", :name => params['Name'], :uuid => @unique_id.to_s, :sip_address => "#{@unique_id}@ahncloudprism.tfoundry.com", :did_active => false }
+    @app.attributes = { :created_at => Time.now, :jid => "#{@unique_id}@ahncloudim.tfoundry.com", :name => params['Name'], :uuid => @unique_id.to_s, :sip_address => "#{@unique_id}@ahncloudprism.tfoundry.com", :did => nil }
     @app.save
     @user.save
     update_rayo_routing
