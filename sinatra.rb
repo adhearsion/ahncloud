@@ -14,7 +14,7 @@ require File.join(File.dirname(__FILE__), './lib', '/app.rb')
 
 DataMapper.setup :default, 'postgres://wdrexler@localhost/ahn_cloud_development'
 DataMapper.finalize
-DataMapper.auto_upgrade!
+DataMapper.auto_migrate!
 # DataMapper::Model.raise_on_save_failure = true
 
 
@@ -64,6 +64,14 @@ helpers do
     end
   end
 
+  def update_rayo_routing
+    rayo_routing_properties = File.new(File.join(File.dirname(__FILE__), './config', '/rayo-routing.properties'), 'w')
+    App.all.each do |app|
+      rayo_routing_properties.write ".*#{app.sip_address}.*=#{app.jid}\n"
+    end
+    rayo_routing_properties.close
+  end
+
 end
 
 get '/' do
@@ -103,9 +111,10 @@ post '/create_app' do
     @user = User.first :username => session[:user]
     @unique_id = UUIDTools::UUID.random_create
     @app = @user.apps.new
-    @app.attributes = { :created_at => Time.now, :jid => params['Jid'], :name => params['Name'], :uuid => @unique_id.to_s, :sip_address => "#{@unique_id}@adhearsioncloud.com", :did_active => false }
+    @app.attributes = { :created_at => Time.now, :jid => "#{@unique_id}@ahncloudim.tfoundry.com", :name => params['Name'], :uuid => @unique_id.to_s, :sip_address => "#{@unique_id}@ahncloudprism.tfoundry.com", :did_active => false }
     @app.save
     @user.save
+    update_rayo_routing
     redirect '/'
   else
     redirect '/login'
@@ -133,43 +142,7 @@ get '/delete_app' do
     flash[:error] = "Unauthorized User"
     log_out
   end
-  redirect '/'
-end
-
-get '/edit_jid' do
-  @user = User.first :username => session[:user]
-  if params['app_id']
-    @app_id = params['app_id']
-    @app = App.get @app_id
-    if @app && @user.apps.include?(app)
-      haml :edit_jid
-    else
-      flash[:error] = "Error: App Not Found"
-      redirect '/'
-    end
-  else
-    flash[:error] = "Error: No App ID Specified"
-    redirect '/'
-  end
-end
-
-post '/edit_jid' do
-  if authorized?
-    @user = User.first :username => session[:user]
-    if params['app_id']
-      app = App.get params['app_id']
-      if app && @user.apps.include?(app)
-        app.update :jid => params['Jid']
-        flash[:notice] = "Jabber ID Updated for App #{app.name}"
-      else
-        flash[:error] = "Error: Unable to find App"
-      end
-    else
-      flash[:error] = "Error: No App ID Specified"
-    end
-  else
-    flash[:error] = "Unauthorized User"
-  end
+  update_rayo_routing
   redirect '/'
 end
 
