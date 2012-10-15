@@ -1,0 +1,11 @@
+!!!
+- content_for :title do
+  Edit App Name
+- content_for :header do
+  = "Edit App Name: #{app.name}"
+- content_for :content do
+  %form{ :action => '', :method => 'post' }
+    %fieldset
+      %input{ :type => 'hidden', :name => 'app_id', :value => "#{@app.id}" }
+      %input{ :type => 'text', :name => 'Name', :value => "#{@app.name}" }
+      %input{ :type => 'submit', :value => 'Change App Name' }

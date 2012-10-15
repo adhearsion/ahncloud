@@ -173,6 +173,42 @@ post '/edit_jid' do
   redirect '/'
 end
 
+get '/edit_name' do
+  if params['app_id']
+    @app_id = params['app_id']
+    @app = App.get @app_id
+    if @app
+      haml :edit_name
+    else
+      flash[:error] = "Error: App Not Found"
+      redirect '/'
+    end
+  else
+    flash[:error] = "Error: No App ID Specified"
+    redirect '/'
+  end
+end
+
+post '/edit_name' do
+  if authorized?
+    @user = User.first :username => session[:user]
+    if params['app_id']
+      app = App.get params['app_id']
+      if app && @user.apps.include?(app)
+        app.update :name => params['Name']
+        flash[:notice] = "Name Updated for App #{app.name}"
+      else
+        flash[:error] = "Error: Unable to find App"
+      end
+    else
+      flash[:error] = "Error: No App ID Specified"
+    end
+  else
+    flash[:error] = "Unauthorized User"
+  end
+  redirect '/'
+end
+
 get '/oauth/callback' do
   authenticate(params['code'])
 end
