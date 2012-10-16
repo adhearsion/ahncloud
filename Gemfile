@@ -10,5 +10,6 @@ gem 'haml'
 gem 'thin'
 gem 'json'
 gem 'httparty'
+gem 'rest_ejabberd'
 
 gem 'uuidtools'

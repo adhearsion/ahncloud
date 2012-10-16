@@ -71,6 +71,7 @@ GEM
       rack
     rack-test (0.6.1)
       rack (>= 1.0)
+    rest_ejabberd (0.0.2)
     sinatra (1.3.3)
       rack (~> 1.3, >= 1.3.6)
       rack-protection (~> 1.2)
@@ -100,6 +101,7 @@ DEPENDENCIES
   httparty
   json
   rack-flash3
+  rest_ejabberd
   sinatra
   sinatra-contrib
   thin
