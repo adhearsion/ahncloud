@@ -1,0 +1,23 @@
+prism_host: ahncloudprism.tfoundry.com
+ejabberd_host: ahncloudim.tfoundry.com
+ejabberd_secret: adhearsionr0x
+postgres_db: 'postgres://wdrexler@localhost/ahn_cloud_development'
+rayo_routing_dir: /opt/voxeo/prism/apps/rayo/WEB-INF/classes/
+api_matrix:
+  login_uri: https://auth.tfoundry.com/oauth/authorize?client_id=7919aeebf6e0d16f28d43dd427850a17&client_secret=07f992846062c5a0&response_type=code&scope=profile&redirect_uri=http://ahncloudprism.tfoundry.com/oauth/callback
+  auth_uri: https://auth.tfoundry.com/me.json?access_token=%s
+  redirect_uri: http://ahncloudprism.tfoundry.com/oauth/callback
+  client_id: 7919aeebf6e0d16f28d43dd427850a17
+  client_secret: 07f992846062c5a0
+flash_notice:
+  log_in: You are now signed in. Welcome %s!
+  log_out: You have logged out.
+  app_created: Successfully created App %s
+  app_deleted: App successfully deleted.
+  did_assigned: DID %s assigned to App %s
+  name_updated: Name updated for App %s
+flash_error:
+  auth_failed: Failed to authenticate user.
+  app_not_found: App not found.
+  did_assign_failed: We are out of DID's. Assignment to %s failed. Please try again later.
+
