@@ -114,13 +114,6 @@ helpers do
   end
 
   def register_jid(jid, password)
-    # client = RestEjabberd.new :secret => $config['ejabberd_secret'], :host => $config['ejabberd_host']
-    # client.register jid, password
-    # if client.is_registered?
-    #   true
-    # else
-    #   false
-    # end
     client = Jabber::Client.new jid
     client.connect
     client.register password
@@ -130,6 +123,7 @@ helpers do
   def change_jid_password(jid, old_password, new_password)
     client = Jabber::Client.new jid
     client.connect
+    client.auth old_password
     client.password = new_password
     client.close
   end
@@ -209,10 +203,13 @@ post '/delete_app' do
       app = App.get params['app_id']
       jid = app.jid
       did = DID.first :number => app.did
-      if user_has_app?(@user, app) && app.destroy
+      begin
         unregister_jid(jid, params['Password'])
-        # did.app_id = nil
-        # did.save
+      rescue
+        flash[:error] = "Jabber Authentication Error. Please try again."
+        redirect '/'
+      end
+      if user_has_app?(@user, app) && app.destroy
         flash[:notice] = $config['flash_notice']['app_deleted']
       else
         flash[:error] = $config['flash_error']['app_not_found']
