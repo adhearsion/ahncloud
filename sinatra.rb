@@ -18,6 +18,7 @@ set :environment, :production
 require File.join(File.dirname(__FILE__), './lib', '/user.rb')
 require File.join(File.dirname(__FILE__), './lib', '/app.rb')
 require File.join(File.dirname(__FILE__), './lib', '/did.rb')
+require File.join(File.dirname(__FILE__), './lib', '/jabber_process.rb')
 
 $config = YAML.load_file(File.join(File.dirname(__FILE__), './config', '/config.yml'))
 
@@ -113,13 +114,6 @@ helpers do
     redirect '/'
   end
 
-  def register_jid(jid, password)
-    client = Jabber::Client.new jid
-    client.connect
-    client.register password
-    client.close
-  end
-
   def change_jid_password(jid, old_password, new_password)
     client = Jabber::Client.new jid
     client.connect
@@ -178,10 +172,11 @@ post '/create_app' do
     @user = User.first :username => session[:user]
     @unique_id = UUIDTools::UUID.random_create
     @app = @user.apps.new
-    @app.attributes = { :created_at => Time.now, :jid => "#{@unique_id}@#{$config['ejabberd_host']}", :name => params['Name'], :uuid => @unique_id.to_s, :sip_address => "#{@unique_id}@#{$config['prism_host']}", :did => nil }
+    @app.attributes = { :created_at => Time.now, :jid => "#{@unique_id}@#{$config['ejabberd_host']}", :name => params['Name'], :uuid => @unique_id.to_s, :sip_address => "#{@unique_id}@#{$config['prism_host']}", :did => nil, :status => "Incomplete" }
     @app.save
     @user.save
-    register_jid @app.jid, params['Password']
+    process = JabberProcess.new :created_at => Time.now, :jid => @app.jid, :password => params['Password'], :app_id => @app.id
+    process.save
     update_rayo_routing
     flash[:notice] = $config['flash_notice']['app_created'] % @app.name
     redirect '/'

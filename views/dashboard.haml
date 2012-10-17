@@ -31,6 +31,9 @@
             = app.did
           - else
             %a{ :href => "/assign_did?app_id=#{app.id}" } Activate
+          %br
+          Status: 
+          = app.status
           .rightAlign
             %a{ :href => "/delete_app?app_id=#{app.id}" } Delete this App
       %br

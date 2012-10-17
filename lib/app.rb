@@ -9,6 +9,7 @@ class App
   property :sip_address, String, :length => 255
   property :name,        String
   property :did,         String
+  property :status,      String
 
   belongs_to :user
 end
