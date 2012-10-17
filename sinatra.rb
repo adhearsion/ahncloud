@@ -5,7 +5,7 @@ require 'data_mapper'
 require 'sinatra/content_for'
 require 'httparty'
 require 'json'
-require 'rest_ejabberd'
+require 'xmpp4r'
 require 'yaml'
 require 'fileutils'
 require 'tempfile'
@@ -24,14 +24,9 @@ $config = YAML.load_file(File.join(File.dirname(__FILE__), './config', '/config.
 
 DataMapper.setup :default, $config['postgres_db']
 DataMapper.finalize
-DataMapper.auto_migrate!
+DataMapper.auto_upgrade!
 # DataMapper::Model.raise_on_save_failure = true
 
-
-#Temporary fake DIDs for testing
-DID.new(:created_at => Time.now, :number => "123456", :app_id => nil).save
-DID.new(:created_at => Time.now, :number => "323417", :app_id => nil).save
-DID.new(:created_at => Time.now, :number => "8675309", :app_id => nil).save
 
 helpers do
 
@@ -119,28 +114,32 @@ helpers do
   end
 
   def register_jid(jid, password)
-    client = RestEjabberd.new :secret => $config['ejabberd_secret'], :host => $config['ejabberd_host']
-    client.register jid, password
-    if client.is_registered?
-      true
-    else
-      false
-    end
+    # client = RestEjabberd.new :secret => $config['ejabberd_secret'], :host => $config['ejabberd_host']
+    # client.register jid, password
+    # if client.is_registered?
+    #   true
+    # else
+    #   false
+    # end
+    client = Jabber::Client.new jid
+    client.connect
+    client.register password
+    client.close
   end
 
   def change_jid_password(jid, old_password, new_password)
-    client = RestEjabberd.new :secret => $config['ejabberd_secret'], :host => $config['ejabberd_host']
-    client.change_password jid, old_password, new_password
+    client = Jabber::Client.new jid
+    client.connect
+    client.password = new_password
+    client.close
   end
 
   def unregister_jid(jid, password)
-    client = RestEjabberd.new :secret => $config['ejabberd_secret'], :host => $config['ejabberd_host']
-    client.unregister jid, password
-    unless client.is_registered?
-      true
-    else
-      false
-    end
+    client = Jabber::Client.new jid
+    client.connect
+    client.auth password
+    client.remove_registration
+    client.close
   end
 
   def user_has_app?(user, app)
@@ -188,6 +187,7 @@ post '/create_app' do
     @app.attributes = { :created_at => Time.now, :jid => "#{@unique_id}@#{$config['ejabberd_host']}", :name => params['Name'], :uuid => @unique_id.to_s, :sip_address => "#{@unique_id}@#{$config['prism_host']}", :did => nil }
     @app.save
     @user.save
+    register_jid @app.jid, params['Password']
     update_rayo_routing
     flash[:notice] = $config['flash_notice']['app_created'] % @app.name
     redirect '/'
@@ -197,6 +197,12 @@ post '/create_app' do
 end
 
 get '/delete_app' do
+  @app_id = params['app_id']
+  @app = App.get @app_id
+  haml :delete_app
+end
+
+post '/delete_app' do
   if authorized?
     @user = User.first :username => session[:user]
     if params['app_id']
@@ -204,9 +210,9 @@ get '/delete_app' do
       jid = app.jid
       did = DID.first :number => app.did
       if user_has_app?(@user, app) && app.destroy
-        # unregister_jid(jid, "cookies") #Password isn't used, but is a required parameter
-        did.app_id = nil
-        did.save
+        unregister_jid(jid, params['Password'])
+        # did.app_id = nil
+        # did.save
         flash[:notice] = $config['flash_notice']['app_deleted']
       else
         flash[:error] = $config['flash_error']['app_not_found']
