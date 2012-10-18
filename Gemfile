@@ -1,4 +1,4 @@
-source "http://rubygems.org"
+source :rubygems
 
 gem 'data_mapper'
 gem 'dm-postgres-adapter'
