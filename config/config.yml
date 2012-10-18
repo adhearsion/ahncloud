@@ -1,8 +1,8 @@
 prism_host: ahncloudprism.tfoundry.com
 ejabberd_host: ahncloudim.tfoundry.com
-ejabberd_secret: adhearsionr0x
-postgres_db: 'postgres://wdrexler@localhost/ahn_cloud_development'
-rayo_routing_dir: /opt/voxeo/prism/apps/rayo/WEB-INF/classes/
+ejabberd_secret: adhearsionr0x!
+postgres_db: 'postgres://ahncloud@localhost/ahn_cloud'
+rayo_routing_dir: /opt/voxeo/prism/apps/rayo.b224/WEB-INF/classes/
 api_matrix:
   login_uri: https://auth.tfoundry.com/oauth/authorize?client_id=7919aeebf6e0d16f28d43dd427850a17&client_secret=07f992846062c5a0&response_type=code&scope=profile&redirect_uri=http://ahncloudprism.tfoundry.com/oauth/callback
   auth_uri: https://auth.tfoundry.com/me.json?access_token=%s
