@@ -28,7 +28,6 @@ DataMapper.finalize
 DataMapper.auto_upgrade!
 # DataMapper::Model.raise_on_save_failure = true
 
-
 helpers do
 
   def show_flash
@@ -90,13 +89,18 @@ helpers do
       user = User.first :username => session[:user]
       app = App.get app_id
       if app && user.apps.include?(app)
-        DID.all.each do |d|
-          if d.app_id.nil?
-            d.app_id = app.id
-            app.did = d.number
-            d.save
-            break
+        if DID.first
+          DID.all.each do |d|
+            if d.app_id.nil?
+              d.app_id = app.id
+              app.did = d.number
+              d.save
+              break
+            end
           end
+        else
+          flash[:error] = $config['flash_error']['did_assign_failed'] % app.name
+          redirect '/'
         end
         app.save
         if app.did
