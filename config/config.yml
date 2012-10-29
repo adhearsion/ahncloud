@@ -4,11 +4,11 @@ ejabberd_secret: adhearsionr0x!
 postgres_db: 'postgres://ahncloud:ahnr0x@ahncloudprism.tfoundry.com/ahncloud'
 rayo_routing_dir: /opt/voxeo/prism/apps/rayo/WEB-INF/classes/
 api_matrix:
-  login_uri: https://auth.tfoundry.com/oauth/authorize?client_id=7919aeebf6e0d16f28d43dd427850a17&client_secret=07f992846062c5a0&response_type=code&scope=profile&redirect_uri=http://ahncloudprism.tfoundry.com/oauth/callback
+  login_uri: https://auth.tfoundry.com/oauth/authorize?client_id=29fac5a3b2bfafbcd32b0e472ccfd5fe&client_secret=f668376016ec639a&response_type=code&scope=profile&redirect_uri=http://ahncloudprism.tfoundry.com/oauth/callback
   auth_uri: https://auth.tfoundry.com/me.json?access_token=%s
   redirect_uri: http://ahncloudprism.tfoundry.com/oauth/callback
-  client_id: 7919aeebf6e0d16f28d43dd427850a17
-  client_secret: 07f992846062c5a0
+  client_id: 29fac5a3b2bfafbcd32b0e472ccfd5fe 
+  client_secret: f668376016ec639a 
 flash_notice:
   log_in: You are now signed in. Welcome %s!
   log_out: You have logged out.
