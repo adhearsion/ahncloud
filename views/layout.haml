@@ -2,7 +2,10 @@
 %html
   %head
     %link{ :rel => "stylesheet", :type => "text/css", :href => "#{url('/css/styles.css')}" }
-    %script{ :type => "text/javascript", :src => "#{url('/javascript/flash.js')}"}
+    %link{ :type => "text/css", :rel => "stylesheet", :href => "#{url('/css/jquery-ui-1.9.1.custom.css')}" }
+    %script{ :type => "text/javascript", :src => "#{url('/javascript/flash.js')}" }
+    %script{ :type => "text/javascript", :src => "http://code.jquery.com/jquery-1.8.2.js" }
+    %script{ :type => "text/javascript", :src => "http://code.jquery.com/ui/1.9.1/jquery-ui.js" }
     = yield_content :head
     %title
       = yield_content :title

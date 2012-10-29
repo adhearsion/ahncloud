@@ -1,42 +1,41 @@
 - content_for :head do
   %script{ :type => "text/javascript", :src => "/javascript/divtools.js" }
+  %script{ :type => "text/javascript"}
+    $(function() { $( "#apps" ).accordion({ collapsible: true }); });
 - content_for :title do
   = "Dashboard: #{@user.username}"
 - content_for :header do
   = "Dashboard: #{@user.username}"
 - content_for :content do
-  #apps
+  #apps.ui-accordion
     - @apps.each do |app|
-      %div{ :id => "app_#{app.name}", :class => "appName" }
+      %h3.ui-accordion-header
         = app.name
+      %div
+        Name: 
+        = app.name
+        %a{ :href => "/edit_name?app_id=#{app.id}" } Edit
+        %br
+        Jabber ID: 
+        = app.jid
+        %a{ :href => "/edit_jid_password?app_id=#{app.id}"} Edit Password
+        %br
+        SIP Address: 
+        = app.sip_address
+        %br
+        Created At: 
+        = app.created_at
+        %br
+        DID: 
+        - if !!app.did
+          = app.did
+        - else
+          %a{ :href => "/assign_did?app_id=#{app.id}" } Activate
+        %br
+        Status: 
+        = app.status
         .rightAlign
-          %button{ :id => "show_#{app.name}", :onclick => "showHideDiv('#{app.name}')" } Show Details
-        .appDetails{ :id => "#{app.name}", :style => "display: none;" }
-          Name: 
-          = app.name
-          %a{ :href => "/edit_name?app_id=#{app.id}" } Edit
-          %br
-          Jabber ID: 
-          = app.jid
-          %a{ :href => "/edit_jid_password?app_id=#{app.id}"} Edit Password
-          %br
-          SIP Address: 
-          = app.sip_address
-          %br
-          Created At: 
-          = app.created_at
-          %br
-          DID: 
-          - if !!app.did
-            = app.did
-          - else
-            %a{ :href => "/assign_did?app_id=#{app.id}" } Activate
-          %br
-          Status: 
-          = app.status
-          .rightAlign
-            %a{ :href => "/delete_app?app_id=#{app.id}" } Delete this App
-      %br
+          %a{ :href => "/delete_app?app_id=#{app.id}" } Delete this App
   %br
   %a{ :href => "/new_app"} Create a New App
 - content_for :footer do
