@@ -9,6 +9,7 @@ require 'xmpp4r'
 require 'yaml'
 require 'fileutils'
 require 'tempfile'
+require 'etc'
 
 YAML::ENGINE.yamler = 'syck'
 use Rack::Flash, :accessorize => [:notice, :error]
@@ -81,7 +82,10 @@ helpers do
       temp << ".*#{app.did}.*=#{app.jid}\n" if !!app.did
     end
     temp.close false
-    File.rename temp.path, "#{$config['rayo_routing_dir']}rayo-routing.properties"
+    filename = temp.path
+    File.rename filename, "#{$config['rayo_routing_dir']}rayo-routing.properties"
+    File.chown(Etc.getpwnam("voxeo").uid, Etc.getgrnam("ahncloud").gid, filename)
+    FileUtils.chmod "u=rw,g=rw,o=r", "#{$config['rayo_routing_dir']}rayo-routing.properties"
   end
 
   def assign_did(app_id)
