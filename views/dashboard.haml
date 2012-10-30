@@ -1,5 +1,7 @@
 - content_for :head do
   %script{ :type => "text/javascript", :src => "/javascript/divtools.js" }
+  %script{ :src => "http://s.phono.com/releases/0.5/jquery.phono.js" }
+  %script{ :src => "http://s.phono.com/addons/callme/79a53b7/jquery.callme.js" }
   %script{ :type => "text/javascript"}
     $(function() { $( "#apps" ).accordion({ collapsible: true }); });
 - content_for :title do
@@ -7,7 +9,7 @@
 - content_for :header do
   = "Dashboard: #{@user.username}"
 - content_for :content do
-  #apps.ui-accordion
+  #apps.ui-accordion{ :style => "width: 480px" }
     - @apps.each do |app|
       %h3.ui-accordion-header
         = app.name
@@ -36,6 +38,8 @@
         = app.status
         .rightAlign
           %a{ :href => "/delete_app?app_id=#{app.id}" } Delete this App
+  #phono{:style => "position: absolute"}
+  %script{ :type => "text/javascript", :src => "/javascript/phono_plugin.js"}
   %br
   %a{ :href => "/new_app"} Create a New App
 - content_for :footer do
