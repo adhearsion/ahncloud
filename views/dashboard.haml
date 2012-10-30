@@ -38,7 +38,11 @@
         = app.status
         .rightAlign
           %a{ :href => "/delete_app?app_id=#{app.id}" } Delete this App
-  #phono{:style => "position: absolute"}
+  #phono{:style => "position: absolute;"}
+    %select{ :id => "dialOptions" }
+      - @apps.each do |app|
+        %option{ :value => "sip:#{app.sip_address}" }
+          = app.name
   %script{ :type => "text/javascript", :src => "/javascript/phono_plugin.js"}
   %br
   %a{ :href => "/new_app"} Create a New App
