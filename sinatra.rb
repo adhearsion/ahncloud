@@ -82,8 +82,9 @@ helpers do
       temp << ".*#{app.did}.*=#{app.jid}\n" if !!app.did
     end
     temp.close false
-    filename = temp.path
-    File.rename filename, "#{$config['rayo_routing_dir']}rayo-routing.properties"
+    tempfile = temp.path
+    filename = "#{$config['rayo_routing_dir']}rayo-routing.properties"
+    File.rename tempfile, filename 
     File.chown(Etc.getpwnam("voxeo").uid, Etc.getgrnam("ahncloud").gid, filename)
     FileUtils.chmod "u=rw,g=rw,o=r", "#{$config['rayo_routing_dir']}rayo-routing.properties"
   end
