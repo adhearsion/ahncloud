@@ -75,18 +75,34 @@ helpers do
     end
   end
 
-  def update_rayo_routing
-    temp = Tempfile.new "rayo-routing", $config['rayo_routing_dir']
-    App.all.each do |app|
-      temp << ".*#{app.sip_address}.*=#{app.jid}\n"
-      temp << ".*#{app.did}.*=#{app.jid}\n" if !!app.did
+  def add_app(uuid, app_jid, sip_addr)
+    response = HTTParty.get $config['rayo']['add_app'] % [$config['prism_host'], uuid, app_jid]
+    if JSON.parse(response.body)['error']
+      flash[:error] = "We could not create your app at this time. Please try again later."
+      false
+    else
+      true if add_sip app_jid, sip_addr
     end
-    temp.close false
-    tempfile = temp.path
-    filename = "#{$config['rayo_routing_dir']}rayo-routing.properties"
-    File.rename tempfile, filename 
-    File.chown(Etc.getpwnam("voxeo").uid, Etc.getgrnam("ahncloud").gid, filename)
-    FileUtils.chmod "u=rw,g=rw,o=r", "#{$config['rayo_routing_dir']}rayo-routing.properties"
+  end
+
+  def add_sip(app_jid, sip_addr)
+    response = HTTParty.get $config['rayo']['add_app'] % [$config['prism_host'], app_jid, sip_addr]
+    if JSON.parse(response.body)['error']
+      flash[:error] = "We were unable to assign a SIP address to your App. Please try again later."
+      false
+    else
+      true
+    end
+  end
+
+  def remove_app(app_jid)
+    response = HTTParty.get $config['rayo']['remove_app'] % [$config['prism_host'], app_jid]
+    if JSON.parse(response.body)['error']
+      flash[:error] = "We were unable to delete your app. Please try again later."
+      false
+    else
+      true
+    end
   end
 
   def assign_did(app_id)
@@ -108,8 +124,7 @@ helpers do
           redirect '/'
         end
         app.save
-        if app.did
-          update_rayo_routing
+        if app.did && add_sip app.jid, app.did
           flash[:notice] = $config['flash_notice']['did_assigned'] % [app.did, app.name]
         else
           flash[:error] = $config['flash_error']['did_assign_failed'] % app.name
@@ -186,8 +201,7 @@ post '/create_app' do
     @user.save
     process = JabberProcess.new :created_at => Time.now, :jid => @app.jid, :password => params['Password'], :app_id => @app.id
     process.save
-    update_rayo_routing
-    flash[:notice] = $config['flash_notice']['app_created'] % @app.name
+    flash[:notice] = $config['flash_notice']['app_created'] % @app.name if add_app @unique_id, @app.jid, @app.sip_address
     redirect '/'
   else
     redirect '/login'
@@ -213,10 +227,8 @@ post '/delete_app' do
         flash[:error] = "Jabber Authentication Error. Please try again."
         redirect '/'
       end
-      if user_has_app?(@user, app) && app.destroy
+      if user_has_app?(@user, app) && app.destroy && remove_app(jid)
         flash[:notice] = $config['flash_notice']['app_deleted']
-      else
-        flash[:error] = $config['flash_error']['app_not_found']
       end
     else
       flash[:error] = $config['flash_error']['app_not_found']
@@ -225,7 +237,6 @@ post '/delete_app' do
     flash[:error] = $config['flash_error']['auth_failed']
     log_out
   end
-  update_rayo_routing
   redirect '/'
 end
 
