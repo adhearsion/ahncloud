@@ -161,7 +161,7 @@ get '/login' do
 end
 
 post '/login' do
-  redirect $config['api_matrix']['login_uri']
+  redirect $config['api_matrix']['login_uri'] % [$config['api_matrix']['client_id'], $config['api_matrix']['client_secret'], $config['api_matrix']['redirect_uri']]
 end
 
 get '/logout' do
