@@ -1,6 +1,7 @@
 prism_host: ahncloudprism.tfoundry.com
 ejabberd_host: ahncloudim.tfoundry.com
 ejabberd_secret: adhearsionr0x!
+use_rayo_routing: true
 postgres_db: 'postgres://ahncloud:ahnr0x@ahncloudprism.tfoundry.com/ahncloud'
 rayo_routing_dir: /opt/voxeo/prism/apps/rayo/WEB-INF/classes/
 api_matrix:
