@@ -27,6 +27,7 @@ $config = YAML.load_file(File.join(File.dirname(__FILE__), './config', '/config.
 DataMapper.setup :default, $config['postgres_db']
 DataMapper.finalize
 DataMapper.auto_upgrade!
+#DataMapper.auto_migrate!
 # DataMapper::Model.raise_on_save_failure = true
 
 helpers do
@@ -85,8 +86,7 @@ helpers do
     tempfile = temp.path
     filename = "#{$config['rayo_routing_dir']}rayo-routing.properties"
     File.rename tempfile, filename 
-    File.chown(Etc.getpwnam("voxeo").uid, Etc.getgrnam("ahncloud").gid, filename)
-    FileUtils.chmod "u=rw,g=rw,o=r", "#{$config['rayo_routing_dir']}rayo-routing.properties"
+    FileUtils.chmod "u=rw,g=rw,o=rw", "#{$config['rayo_routing_dir']}rayo-routing.properties"
   end
 
   def assign_did(app_id)
