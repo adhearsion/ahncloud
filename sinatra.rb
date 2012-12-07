@@ -125,18 +125,10 @@ helpers do
     redirect '/'
   end
 
-  def change_jid_password(jid, old_password, new_password)
-    client = Jabber::Client.new jid
-    client.connect
-    client.auth old_password
-    client.password = new_password
-    client.close
-  end
-
   def unregister_jid(jid, password)
     client = Jabber::Client.new jid
     client.connect
-    client.auth password
+    client.auth session[:access_token]
     client.remove_registration
     client.close
   end
@@ -186,7 +178,7 @@ post '/create_app' do
     @app.attributes = { :created_at => Time.now, :jid => "#{@unique_id}@#{$config['ejabberd_host']}", :name => params['Name'], :uuid => @unique_id.to_s, :sip_address => "#{@unique_id}@#{$config['prism_host']}", :did => nil, :status => "Incomplete" }
     @app.save
     @user.save
-    process = JabberProcess.new :created_at => Time.now, :jid => @app.jid, :password => params['Password'], :app_id => @app.id
+    process = JabberProcess.new :created_at => Time.now, :jid => @app.jid, :password => session[:access_token], :app_id => @app.id
     process.save
     update_rayo_routing
     flash[:notice] = $config['flash_notice']['app_created'] % @app.name
