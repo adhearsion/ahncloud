@@ -89,8 +89,6 @@ helpers do
     FileUtils.chmod "u=rw,g=rw,o=rw", "#{$config['rayo_routing_dir']}rayo-routing.properties"
   end
 
-  end
-
   def assign_did(app_id)
     if authorized?
       user = User.first :username => session[:user]
