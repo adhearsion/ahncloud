@@ -225,6 +225,7 @@ post '/delete_app' do
     flash[:error] = $config['flash_error']['auth_failed']
     log_out
   end
+  update_rayo_routing
   redirect '/'
 end
 
