@@ -210,6 +210,7 @@ post '/delete_app' do
         update_rayo_routing
       else 
         flash[:error] = $config['flash_error']['app_not_found']
+      end
     else
       flash[:error] = $config['flash_error']['app_not_found']
     end
