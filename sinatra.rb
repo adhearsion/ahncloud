@@ -208,6 +208,8 @@ post '/delete_app' do
       if user_has_app?(@user, app) && app.destroy
         flash[:notice] = $config['flash_notice']['app_deleted']
         update_rayo_routing
+      else 
+        flash[:error] = $config['flash_error']['app_not_found']
     else
       flash[:error] = $config['flash_error']['app_not_found']
     end
