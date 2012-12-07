@@ -1,6 +1,7 @@
 prism_host: ahncloudprism.tfoundry.com
 ejabberd_host: ahncloudim.tfoundry.com
 ejabberd_secret: adhearsionr0x!
+use_rayo_routing: true
 postgres_db: 'postgres://ahncloud:ahnr0x@ahncloudprism.tfoundry.com/ahncloud'
 rayo_routing_dir: /opt/voxeo/prism/apps/rayo/WEB-INF/classes/
 api_matrix:
@@ -20,4 +21,8 @@ flash_error:
   auth_failed: Failed to authenticate user.
   app_not_found: App not found.
   did_assign_failed: We are out of DID's. Assignment to %s failed. Please try again later.
+rayo:
+  add_app: http://%s:8080/rayo/jmx/exec/com.rayo.gateway:Type=Admin,name=Admin/registerApplication/staging/%s/%s
+  add_sip: http://%s:8080/rayo/jmx/exec/com.rayo.gateway:Type=Admin,name=Admin/registerAddress/%s/%s
+  remove_app: http://%s:8080/rayo/jmx/exec/com.rayo.gateway:Type=Admin,name=Admin/unregisterApplication/%s
 

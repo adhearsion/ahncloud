@@ -27,7 +27,7 @@ $config = YAML.load_file(File.join(File.dirname(__FILE__), './config', '/config.
 DataMapper.setup :default, $config['postgres_db']
 DataMapper.finalize
 DataMapper.auto_upgrade!
-#DataMapper.auto_migrate!
+# DataMapper.auto_migrate
 # DataMapper::Model.raise_on_save_failure = true
 
 helpers do
@@ -87,6 +87,8 @@ helpers do
     filename = "#{$config['rayo_routing_dir']}rayo-routing.properties"
     File.rename tempfile, filename 
     FileUtils.chmod "u=rw,g=rw,o=rw", "#{$config['rayo_routing_dir']}rayo-routing.properties"
+  end
+
   end
 
   def assign_did(app_id)
@@ -215,9 +217,7 @@ post '/delete_app' do
       end
       if user_has_app?(@user, app) && app.destroy
         flash[:notice] = $config['flash_notice']['app_deleted']
-      else
-        flash[:error] = $config['flash_error']['app_not_found']
-      end
+        update_rayo_routing
     else
       flash[:error] = $config['flash_error']['app_not_found']
     end
@@ -225,7 +225,6 @@ post '/delete_app' do
     flash[:error] = $config['flash_error']['auth_failed']
     log_out
   end
-  update_rayo_routing
   redirect '/'
 end
 
