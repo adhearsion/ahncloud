@@ -180,10 +180,6 @@ end
 get '/delete_app' do
   @app_id = params['app_id']
   @app = App.get @app_id
-  haml :delete_app
-end
-
-post '/delete_app' do
   if authorized?
     @user = User.first :username => session[:user]
     if params['app_id']
