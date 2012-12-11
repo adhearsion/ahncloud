@@ -27,7 +27,7 @@ $config = YAML.load_file(File.join(File.dirname(__FILE__), './config', '/config.
 DataMapper.setup :default, $config['postgres_db']
 DataMapper.finalize
 DataMapper.auto_upgrade!
-DataMapper.auto_migrate!
+# DataMapper.auto_migrate!
 # DataMapper::Model.raise_on_save_failure = true
 
 helpers do
