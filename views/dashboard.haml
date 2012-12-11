@@ -21,7 +21,7 @@
         Jabber ID: 
         = app.jid
         %br
-        Refresh Token (Use this as your password):
+        Refresh Token (JID Password):
         = @user.token
         %br
         SIP Address: 
@@ -35,6 +35,8 @@
           = app.did
         - else
           %a{ :href => "/assign_did?app_id=#{app.id}" } Activate
+        .rightAlign
+          %a{ :href => "/delete_app?app_id=#{app.id}"}
         %br
   #phono{:style => "position: absolute;"}
     %select{ :id => "dialOptions" }
