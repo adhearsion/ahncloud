@@ -27,7 +27,7 @@ $config = YAML.load_file(File.join(File.dirname(__FILE__), './config', '/config.
 DataMapper.setup :default, $config['postgres_db']
 DataMapper.finalize
 DataMapper.auto_upgrade!
-# DataMapper.auto_migrate
+DataMapper.auto_migrate!
 # DataMapper::Model.raise_on_save_failure = true
 
 helpers do
@@ -246,8 +246,7 @@ get '/oauth/callback' do
   authenticate(params['code'])
 end
 
-get 'authorize_jid' do
-  content_type :json
+get '/authorize_jid' do
   app = App.first :jid => params[:jid]
   options = { :body => { :client_id => $config['api_matrix']['client_id'], :client_secret => $config['api_matrix']['client_secret'], :redirect_uri => $config['api_matrix']['redirect_uri'], :grant_type => "refresh_token", :refresh_token => params[:refresh_token] } }
   if params[:refresh_token] == app.user.token
