@@ -166,7 +166,7 @@ post '/create_app' do
     @user = User.first :username => session[:user]
     @unique_id = UUIDTools::UUID.random_create
     @app = @user.apps.new
-    @app.attributes = { :created_at => Time.now, :jid => "#{@unique_id}@#{$config['ejabberd_host']}", :name => params['Name'], :uuid => @unique_id.to_s, :sip_address => "#{@unique_id}@#{$config['prism_host']}", :did => nil, :status => "Incomplete" }
+    @app.attributes = { :created_at => Time.now, :jid => "#{@unique_id}@#{$config['ejabberd_host']}", :name => params['Name'], :uuid => @unique_id.to_s, :sip_address => "#{@unique_id}@#{$config['prism_host']}", :did => nil }
     @app.save
     @user.save
     update_rayo_routing

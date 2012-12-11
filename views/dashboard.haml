@@ -20,7 +20,9 @@
         %br
         Jabber ID: 
         = app.jid
-        %a{ :href => "/edit_jid_password?app_id=#{app.id}"} Edit Password
+        %br
+        Refresh Token (Use this as your password):
+        = @user.token
         %br
         SIP Address: 
         = app.sip_address
