@@ -22,15 +22,16 @@ def response(pass = false)
 end
 
 def authorize(input = nil)
-  unless input $stdout.write response false
-  response = HTTParty.get "https://auth.tfoundry.com/me.json?access_token=%s" % input 
+  command = input[0]
+  unless (input && command == 'auth') $stdout.write response false
+  response = HTTParty.get "https://ahncloudprism.tfoundry.com/authorize_jid?jid=%s&refresh_token=%s" % [input[1], input[2]] 
   body = JSON.parse response.body
-  if body["error"]
-    log.info "Token #{input} rejected!"
-    $stdout.write response(false)
-  else
-    log.info "Token #{input} authenticated"
+  if body["success"] == "true"
+    log.info "Token #{input[2]} authenticated"
     $stdout.write response(true)
+  else
+    log.info "Token #{input[2]} rejected!"
+    $stdout.write response(false)
   end
 end
 
@@ -41,7 +42,7 @@ begin
     len = $stdin.read(2).unpack(PACK_FORMAT).first
     log.debug "Expecting #{len} bytes..."
     # Read that many bytes from stdin and split on colon delimeter
-    input = $stdin.read(len)
+    input = $stdin.read(len).split ":"
     log.debug "Read data: #{input.inspect}"
   
     authorize input
